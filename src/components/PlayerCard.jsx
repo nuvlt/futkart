@@ -1,12 +1,27 @@
+import { useState } from "react";
 import "./PlayerCard.css";
 
-// Kart bileşeni. props:
-//   player: oyuncu objesi (players.js'ten)
-//   faceDown: arka yüz mü? (true ise tek/çift modunda gizli)
-//   highlightStat: vurgulanacak stat anahtarı ("pac","sho"...) veya null
-//   onPick: bir stata tıklanınca çağrılır (stat anahtarı) — tıklanabilir yapar
-//   small: küçük boy
+// Oyuncuya özel temsili avatar: baş harf + bayrak, pozisyona göre renk.
+function Avatar({ player }) {
+  const initials = player.name
+    .split(/[\s-]+/)
+    .map((w) => w[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+  return (
+    <div className="fc-avatar">
+      <span className="fc-av-initials">{initials}</span>
+      <span className="fc-av-flag">{player.flag}</span>
+    </div>
+  );
+}
+
+// props:
+//   player, faceDown, highlightStat, onPick, small, dim
 export default function PlayerCard({ player, faceDown, highlightStat, onPick, small, dim }) {
+  const [imgFailed, setImgFailed] = useState(false);
+
   if (!player) return <div className={"fcard empty" + (small ? " small" : "")} />;
 
   if (faceDown) {
@@ -30,17 +45,15 @@ export default function PlayerCard({ player, faceDown, highlightStat, onPick, sm
     const clickable = !!onPick;
     return (
       <div
-        className={
-          "fc-stat" +
-          (hot ? " hot" : "") +
-          (clickable ? " clickable" : "")
-        }
+        className={"fc-stat" + (hot ? " hot" : "") + (clickable ? " clickable" : "")}
         onClick={clickable ? () => onPick(key) : undefined}
       >
         <b>{player[key]}</b> {label}
       </div>
     );
   };
+
+  const showPhoto = player.foto && !imgFailed;
 
   return (
     <div className={"fcard" + (small ? " small" : "") + (dim ? " dim" : "")}>
@@ -52,10 +65,15 @@ export default function PlayerCard({ player, faceDown, highlightStat, onPick, sm
             <span className="fc-flag">{player.flag}</span>
           </div>
           <div className="fc-photo">
-            {player.foto ? (
-              <img src={player.foto} alt={player.name} />
+            {showPhoto ? (
+              <img
+                src={player.foto}
+                alt={player.name}
+                onError={() => setImgFailed(true)}
+                loading="lazy"
+              />
             ) : (
-              <span className="fc-photo-fb">FOTO</span>
+              <Avatar player={player} />
             )}
           </div>
         </div>
