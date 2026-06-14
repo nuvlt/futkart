@@ -76,30 +76,38 @@ export function playStatRound(game, statKey) {
 // Açılan kartın ovr son hanesine bakılır.
 export function playOddEvenRound(game, guess) {
   const g = structuredClone(game);
-  const opener = g.players[g.turn];        // kartı açan
-  const guesserIdx = g.turn === 0 ? 1 : 0; // tahmin eden rakip
+  const openerIdx = g.turn;
+  const opener = g.players[openerIdx];      // kartı açan
+  const guesserIdx = openerIdx === 0 ? 1 : 0; // tahmin eden rakip
   const guesser = g.players[guesserIdx];
-  if (!opener.deck.length) return g;
+  if (!opener.deck.length || !guesser.deck.length) return g;
 
-  const card = opener.deck[0];
+  const card = opener.deck[0];      // açanın ortaya koyduğu kart (tahmin bunun üzerine)
+  const stake = guesser.deck[0];    // rakibin ortaya koyduğu bahis kartı
   const lastDigit = card.ovr % 10;
   const actual = lastDigit % 2 === 0 ? "even" : "odd";
   const correct = guess === actual;
+  const lbl = actual === "odd" ? "tek" : "çift";
 
+  // İki taraf da üst kartını ortaya koyar
   opener.deck.shift();
+  guesser.deck.shift();
+
   if (correct) {
-    // tahmin tutarsa rakip kartı alır, sıra rakibe geçer
-    guesser.deck.push(card);
+    // tahmin eden kazandı → her iki kartı da alır, sıra ona geçer
+    guesser.deck.push(card, stake);
     g.turn = guesserIdx;
-    g.log = [{ result: "guess", correct: true, digit: lastDigit, actual,
-      msg: `${guesser.name} bildi! ${card.name} (${card.ovr}, ${actual === "odd" ? "tek" : "çift"}) → kartı aldı.` }];
+    g.log = [{ result: "win", winner: guesserIdx, digit: lastDigit, actual,
+      msg: `${guesser.name} bildi! ${card.name} ${card.ovr} → ${lbl}. 2 kart kazandı.` }];
   } else {
-    // tutmazsa kartı açan saklar (destesinin altına), sıra açanda kalır
-    opener.deck.push(card);
-    g.log = [{ result: "guess", correct: false, digit: lastDigit, actual,
-      msg: `${guesser.name} bilemedi. ${card.name} (${card.ovr}, ${actual === "odd" ? "tek" : "çift"}) → kart sahibinde kaldı.` }];
+    // açan kazandı → her iki kartı da alır, sıra onda kalır
+    opener.deck.push(card, stake);
+    g.turn = openerIdx;
+    g.log = [{ result: "win", winner: openerIdx, digit: lastDigit, actual,
+      msg: `${guesser.name} bilemedi. ${card.name} ${card.ovr} → ${lbl}. ${opener.name} 2 kart kazandı.` }];
   }
 
-  if (!opener.deck.length) g.winner = guesserIdx;
+  if (!g.players[0].deck.length) g.winner = 1;
+  else if (!g.players[1].deck.length) g.winner = 0;
   return g;
 }

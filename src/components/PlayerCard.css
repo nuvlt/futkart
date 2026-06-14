@@ -1,67 +1,116 @@
 .fcard {
   width: 210px;
-  height: 328px;
-  border-radius: 14px;
-  padding: 7px;
-  background: linear-gradient(160deg, #bcd2f0, #7da3d6 40%, #bcd2f0);
+  height: 330px;
+  border-radius: 16px;
+  padding: 8px;
+  background: linear-gradient(155deg, #d8e6fa 0%, #9cb8e0 35%, #6f93c8 60%, #cdddf4 100%);
   flex-shrink: 0;
   user-select: none;
+  box-shadow: 0 14px 34px rgba(0,0,0,.45), 0 0 0 1px rgba(255,255,255,.18) inset;
+  transition: transform .14s ease, filter .2s ease, opacity .2s ease;
 }
-.fcard.small { width: 150px; height: 234px; padding: 5px; border-radius: 10px; }
-.fcard.empty { background: transparent; border: 2px dashed #c7d4e6; }
+.fcard.small { width: 150px; height: 236px; padding: 6px; border-radius: 12px; }
+.fcard.empty { background: transparent; border: 2px dashed #2c456b; box-shadow: none; }
+.fcard.dim { filter: saturate(.55) brightness(.82); opacity: .8; }
 
 .fc-inner {
   width: 100%; height: 100%;
-  border-radius: 9px;
-  background: linear-gradient(155deg, #f4f6fb 0%, #dde6f3 55%, #cfe0f7 100%);
+  border-radius: 10px;
+  background: linear-gradient(155deg, #f6f8fc 0%, #e2ebf7 50%, #cfe0f7 100%);
   position: relative;
   overflow: hidden;
 }
+/* mavi köşe bloğu */
 .fc-inner:before {
   content: "";
   position: absolute; top: 0; right: 0;
-  width: 70%; height: 48%;
-  background: #1a4fa0;
-  clip-path: polygon(35% 0, 100% 0, 100% 100%, 0 60%);
-  opacity: .9;
+  width: 74%; height: 50%;
+  background: linear-gradient(135deg, #2a5fb0 0%, #15397a 100%);
+  clip-path: polygon(32% 0, 100% 0, 100% 100%, 0 58%);
+}
+/* hafif üst parlama */
+.fc-inner:after {
+  content: "";
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(255,255,255,.35) 0%, transparent 22%);
+  pointer-events: none;
 }
 
-.fc-top { position: relative; display: flex; padding: 12px 12px 0; z-index: 2; }
+.fc-top { position: relative; display: flex; padding: 13px 13px 0; z-index: 2; }
 .fc-rt { display: flex; flex-direction: column; align-items: center; line-height: 1; }
-.fc-ovr { font-size: 32px; font-weight: 800; color: #2c3e5c; }
-.fc-pos { font-size: 15px; font-weight: 700; margin-top: 3px; color: #3a4a63; }
-.fc-flag { font-size: 17px; margin-top: 8px; }
+.fc-ovr {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 38px; font-weight: 800; color: #1f3354;
+  text-shadow: 0 1px 0 rgba(255,255,255,.6);
+}
+.fc-pos { font-family: 'Barlow Condensed'; font-size: 16px; font-weight: 700; margin-top: 1px; color: #2f4a73; }
+.fc-flag { font-size: 18px; margin-top: 8px; }
 
-.fc-photo { position: absolute; right: 8px; top: 4px; width: 124px; height: 134px;
-  display: flex; align-items: flex-end; justify-content: center; overflow: hidden; }
-.fc-photo img { width: 100%; height: 100%; object-fit: contain; object-position: bottom; }
-.fc-photo-fb { font-size: 13px; color: #ffffffcc; font-weight: 700; letter-spacing: 1px; margin-bottom: 32px; }
+.fc-photo {
+  position: absolute; right: 6px; top: 2px;
+  width: 132px; height: 140px;
+  display: flex; align-items: flex-end; justify-content: center;
+  overflow: hidden;
+}
+.fc-photo img {
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: top center;
+  -webkit-mask-image: linear-gradient(180deg, #000 78%, transparent 100%);
+  mask-image: linear-gradient(180deg, #000 78%, transparent 100%);
+}
+.fc-photo-fb {
+  font-family: 'Barlow Condensed';
+  font-size: 14px; color: rgba(255,255,255,.7); font-weight: 700;
+  letter-spacing: 2px; margin-bottom: 34px;
+}
 
-.fc-name { position: relative; z-index: 2; text-align: center; font-size: 22px;
-  font-weight: 800; color: #2c3e5c; margin-top: 88px; letter-spacing: 1px; }
-.fcard.small .fc-name { font-size: 16px; margin-top: 58px; }
+.fc-name {
+  position: relative; z-index: 2; text-align: center;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 25px; font-weight: 800; color: #1f3354;
+  margin-top: 90px; letter-spacing: 1.5px;
+  text-shadow: 0 1px 0 rgba(255,255,255,.5);
+}
+.fcard.small .fc-name { font-size: 18px; margin-top: 60px; }
 
-.fc-line { height: 1px; background: #9fb3cf; margin: 7px 24px; }
+.fc-line {
+  height: 1.5px; margin: 8px 24px;
+  background: linear-gradient(90deg, transparent, #a9bdd9 20%, #c9a449 50%, #a9bdd9 80%, transparent);
+}
 
-.fc-stats { position: relative; z-index: 2; padding: 2px 26px 0;
-  font-size: 15px; color: #3a4a63; }
+.fc-stats {
+  position: relative; z-index: 2; padding: 2px 28px 0;
+  font-size: 15.5px; color: #2f4a73;
+}
 .fcard.small .fc-stats { font-size: 11px; padding: 2px 16px 0; }
 .fc-row { display: flex; }
-.fc-stat { flex: 1; display: flex; gap: 7px; padding: 3px 0; border-radius: 5px; }
-.fc-row > .fc-stat:first-child { border-right: 1px solid #aebfd6; }
-.fc-row > .fc-stat:last-child { padding-left: 14px; }
-.fc-stat b { font-weight: 800; color: #2c3e5c; min-width: 24px; text-align: right; }
+.fc-stat { flex: 1; display: flex; gap: 7px; padding: 4px 4px; border-radius: 6px; transition: background .1s; }
+.fc-row > .fc-stat:first-child { border-right: 1px solid #b4c6de; }
+.fc-row > .fc-stat:last-child { padding-left: 16px; }
+.fc-stat b {
+  font-family: 'Barlow Condensed'; font-weight: 800; font-size: 17px;
+  color: #1f3354; min-width: 26px; text-align: right;
+}
+.fcard.small .fc-stat b { font-size: 13px; min-width: 20px; }
 
 .fc-stat.clickable { cursor: pointer; }
-.fc-stat.clickable:hover { background: #c5d8f2; }
-.fc-stat.hot { background: #ffe08a; }
-
-.fc-photo .fc-photo-fb { white-space: nowrap; }
+.fc-stat.clickable:hover { background: #bcd3f1; }
+.fc-stat.hot { background: #f4d774; box-shadow: 0 0 0 1px #d9b53e; }
 
 /* arka yüz */
 .fcard.back .fc-back-inner {
-  width: 100%; height: 100%; border-radius: 9px;
-  background: linear-gradient(155deg, #1a4fa0, #0d2d5c);
+  width: 100%; height: 100%; border-radius: 10px;
+  background:
+    radial-gradient(120px 120px at 50% 40%, #2a5fb0, transparent 70%),
+    linear-gradient(155deg, #173a7d, #0c1f47);
   display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
 }
-.fc-back-mark { font-size: 80px; font-weight: 800; color: #ffffff44; }
+.fcard.back .fc-back-inner:before {
+  content: "★"; position: absolute; font-size: 200px; color: rgba(255,255,255,.04);
+}
+.fc-back-mark {
+  font-family: 'Barlow Condensed'; font-size: 92px; font-weight: 800;
+  color: rgba(231,193,76,.55);
+  text-shadow: 0 0 30px rgba(231,193,76,.3);
+}

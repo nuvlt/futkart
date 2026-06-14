@@ -1,24 +1,23 @@
 import { useState } from "react";
 import PlayerCard from "./components/PlayerCard.jsx";
-import {
-  dealGame, playStatRound, playOddEvenRound, STAT_LABELS,
-} from "./game.js";
+import { dealGame, playStatRound, playOddEvenRound } from "./game.js";
 import "./App.css";
 
 export default function App() {
-  const [screen, setScreen] = useState("home"); // home | game
-  const [mode, setMode] = useState("stat");      // stat | oddeven
+  const [screen, setScreen] = useState("home");
+  const [mode, setMode] = useState("stat");
   const [p1, setP1] = useState("");
   const [p2, setP2] = useState("");
   const [game, setGame] = useState(null);
-  const [reveal, setReveal] = useState(false);   // tek/çift: kart açıldı mı
+  const [reveal, setReveal] = useState(false);
+  const [scores, setScores] = useState([0, 0]); // tek/çift: doğru tahmin sayısı
 
   function start() {
     setGame(dealGame(p1, p2));
+    setScores([0, 0]);
     setReveal(false);
     setScreen("game");
   }
-
   function newGame() {
     setScreen("home");
     setGame(null);
@@ -26,93 +25,128 @@ export default function App() {
 
   if (screen === "home") {
     return (
-      <div className="wrap home">
-        <h1>⚽ Futbolcu Kart Kapışması</h1>
-        <p className="sub">Çocukluğun kart oyunu, sırayla — aynı cihazda karşılıklı.</p>
+      <div className="app">
+        <div className="home">
+          <div className="brand">
+            <span className="brand-mark">★</span>
+            <h1>KART KAPIŞMASI</h1>
+            <p className="tag">Sahanın yıldızlarını kapıştır</p>
+          </div>
 
-        <div className="modes">
-          <button
-            className={"mode-btn" + (mode === "stat" ? " on" : "")}
-            onClick={() => setMode("stat")}
-          >
-            <b>İstatistik Yarıştırma</b>
-            <span>Stat seç, yüksek olan kartı alır</span>
-          </button>
-          <button
-            className={"mode-btn" + (mode === "oddeven" ? " on" : "")}
-            onClick={() => setMode("oddeven")}
-          >
-            <b>Tek mi Çift mi?</b>
-            <span>Reytingin son hanesini tahmin et</span>
-          </button>
+          <div className="modes">
+            <button className={"mode-btn" + (mode === "stat" ? " on" : "")} onClick={() => setMode("stat")}>
+              <span className="mode-ic">⚔️</span>
+              <b>İstatistik Yarıştırma</b>
+              <span className="mode-d">Stat seç, yüksek olan rakibin kartını alır</span>
+            </button>
+            <button className={"mode-btn" + (mode === "oddeven" ? " on" : "")} onClick={() => setMode("oddeven")}>
+              <span className="mode-ic">🎲</span>
+              <b>Tek mi Çift mi?</b>
+              <span className="mode-d">Reytingin son hanesini tahmin et</span>
+            </button>
+          </div>
+
+          <div className="names">
+            <input placeholder="1. oyuncu" value={p1} onChange={(e) => setP1(e.target.value)} maxLength={14} />
+            <span className="vs-mini">VS</span>
+            <input placeholder="2. oyuncu" value={p2} onChange={(e) => setP2(e.target.value)} maxLength={14} />
+          </div>
+
+          <button className="start" onClick={start}>Başlat</button>
+          <p className="foot">Aynı cihazda sırayla • üyelik yok</p>
         </div>
-
-        <div className="names">
-          <input placeholder="1. oyuncu adı" value={p1} onChange={(e) => setP1(e.target.value)} />
-          <input placeholder="2. oyuncu adı" value={p2} onChange={(e) => setP2(e.target.value)} />
-        </div>
-
-        <button className="start" onClick={start}>Oyunu Başlat</button>
       </div>
     );
   }
 
   const a = game.players[0];
   const b = game.players[1];
-  const turnName = game.players[game.turn].name;
+  const total = a.deck.length + b.deck.length + game.pot.length;
 
-  // ---- KAZANAN EKRANI ----
   if (game.winner !== null) {
+    const w = game.players[game.winner];
     return (
-      <div className="wrap home">
-        <h1>🏆 {game.players[game.winner].name} kazandı!</h1>
-        <p className="sub">Bütün kartları topladı.</p>
-        <button className="start" onClick={newGame}>Yeni Oyun</button>
+      <div className="app">
+        <div className="home win">
+          <div className="trophy">🏆</div>
+          <h1>{w.name}</h1>
+          <p className="tag">kazandı!</p>
+          {mode === "oddeven" && (
+            <p className="win-score">Doğru tahmin: {scores[0]} – {scores[1]}</p>
+          )}
+          <button className="start" onClick={newGame}>Yeni Oyun</button>
+        </div>
       </div>
     );
   }
 
+  // ---- SKORBORD (her iki modda) ----
+  const Scoreboard = () => (
+    <div className="board">
+      <div className={"team" + (game.turn === 0 ? " active" : "")}>
+        <span className="team-name">{a.name}</span>
+        <span className="team-stat">
+          <b>{a.deck.length}</b> kart
+          {mode === "oddeven" && <em>{scores[0]} ✓</em>}
+        </span>
+      </div>
+      <div className="board-mid">
+        <span className="board-vs">VS</span>
+        {game.pot.length > 0 && <span className="pot-badge">+{game.pot.length} ortada</span>}
+      </div>
+      <div className={"team right" + (game.turn === 1 ? " active" : "")}>
+        <span className="team-name">{b.name}</span>
+        <span className="team-stat">
+          <b>{b.deck.length}</b> kart
+          {mode === "oddeven" && <em>{scores[1]} ✓</em>}
+        </span>
+      </div>
+    </div>
+  );
+
   // ---- İSTATİSTİK YARIŞTIRMA ----
   if (mode === "stat") {
+    const last = game.log[0];
     return (
-      <div className="wrap">
-        <div className="topbar">
-          <span>{a.name}: {a.deck.length} kart</span>
-          <button className="ghost" onClick={newGame}>Çıkış</button>
-          <span>{b.name}: {b.deck.length} kart</span>
-        </div>
-
-        <p className="turn">Sıra: <b>{turnName}</b> — bir istatistik seç</p>
-
-        <div className="table">
-          <div className="side">
-            <small>{a.name}</small>
-            <PlayerCard
-              player={a.deck[0]}
-              highlightStat={game.log[0]?.stat}
-              onPick={game.turn === 0 ? (k) => setGame(playStatRound(game, k)) : undefined}
-            />
+      <div className="app">
+        <div className="game">
+          <div className="game-top">
+            <button className="exit" onClick={newGame}>‹ Çıkış</button>
+            <span className="progress">{total} kart oyunda</span>
           </div>
 
-          <div className="vs">VS</div>
+          <Scoreboard />
 
-          <div className="side">
-            <small>{b.name}</small>
-            <PlayerCard
-              player={b.deck[0]}
-              highlightStat={game.log[0]?.stat}
-              onPick={game.turn === 1 ? (k) => setGame(playStatRound(game, k)) : undefined}
-            />
+          <p className="prompt">
+            Sıra <b>{game.players[game.turn].name}</b>'da — bir istatistik seç
+          </p>
+
+          <div className="arena">
+            <div className="slot">
+              <PlayerCard
+                player={a.deck[0]}
+                highlightStat={last?.stat}
+                onPick={game.turn === 0 ? (k) => setGame(playStatRound(game, k)) : undefined}
+                dim={game.turn !== 0}
+              />
+            </div>
+            <div className="arena-vs">VS</div>
+            <div className="slot">
+              <PlayerCard
+                player={b.deck[0]}
+                highlightStat={last?.stat}
+                onPick={game.turn === 1 ? (k) => setGame(playStatRound(game, k)) : undefined}
+                dim={game.turn !== 1}
+              />
+            </div>
           </div>
-        </div>
 
-        {game.pot.length > 0 && (
-          <p className="pot">Ortada bekleyen: {game.pot.length} kart</p>
-        )}
-        {game.log[0] && <p className="result">{game.log[0].msg}</p>}
-        <p className="hint">
-          {game.players[game.turn].name}'in kartındaki bir stata tıkla.
-        </p>
+          {last && (
+            <div className={"verdict " + last.result}>
+              {last.msg}
+            </div>
+          )}
+        </div>
       </div>
     );
   }
@@ -125,40 +159,62 @@ export default function App() {
 
   function guess(g) {
     setReveal(true);
+    const card = opener.deck[0];
+    const actual = card.ovr % 10 % 2 === 0 ? "even" : "odd";
+    const correct = g === actual;
     setTimeout(() => {
+      if (correct) {
+        setScores((s) => {
+          const n = [...s];
+          n[guesserIdx]++;
+          return n;
+        });
+      }
       setGame(playOddEvenRound(game, g));
       setReveal(false);
-    }, 1400);
+    }, 1500);
   }
 
+  const last = game.log[0];
   return (
-    <div className="wrap">
-      <div className="topbar">
-        <span>{a.name}: {a.deck.length} kart</span>
-        <button className="ghost" onClick={newGame}>Çıkış</button>
-        <span>{b.name}: {b.deck.length} kart</span>
-      </div>
-
-      <p className="turn">
-        <b>{opener.name}</b> kartı açıyor — <b>{guesser.name}</b> tahmin etsin:
-        reytingin son hanesi tek mi, çift mi?
-      </p>
-
-      <div className="table single">
-        <div className="side">
-          <small>{opener.name} (üst kart)</small>
-          <PlayerCard player={opener.deck[0]} faceDown={!reveal} />
+    <div className="app">
+      <div className="game">
+        <div className="game-top">
+          <button className="exit" onClick={newGame}>‹ Çıkış</button>
+          <span className="progress">{a.deck.length + b.deck.length} kart oyunda</span>
         </div>
-      </div>
 
-      {!reveal && (
-        <div className="guess-btns">
-          <button onClick={() => guess("odd")}>TEK</button>
-          <button onClick={() => guess("even")}>ÇİFT</button>
+        <Scoreboard />
+
+        <p className="prompt">
+          <b>{opener.name}</b> kart açıyor — <b>{guesser.name}</b> tahmin etsin
+        </p>
+
+        <div className="arena single">
+          <div className="slot">
+            <PlayerCard player={opener.deck[0]} faceDown={!reveal} />
+          </div>
         </div>
-      )}
 
-      {game.log[0] && <p className="result">{game.log[0].msg}</p>}
+        {!reveal ? (
+          <div className="guess-btns">
+            <button className="guess odd" onClick={() => guess("odd")}>
+              <b>TEK</b><span>1 · 3 · 5 · 7 · 9</span>
+            </button>
+            <button className="guess even" onClick={() => guess("even")}>
+              <b>ÇİFT</b><span>0 · 2 · 4 · 6 · 8</span>
+            </button>
+          </div>
+        ) : (
+          <p className="revealing">Açılıyor…</p>
+        )}
+
+        {last && (
+          <div className={"verdict " + (last.winner === guesserIdx ? "p0" : "tie")}>
+            {last.msg}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

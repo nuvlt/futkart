@@ -6,7 +6,7 @@ import "./PlayerCard.css";
 //   highlightStat: vurgulanacak stat anahtarı ("pac","sho"...) veya null
 //   onPick: bir stata tıklanınca çağrılır (stat anahtarı) — tıklanabilir yapar
 //   small: küçük boy
-export default function PlayerCard({ player, faceDown, highlightStat, onPick, small }) {
+export default function PlayerCard({ player, faceDown, highlightStat, onPick, small, dim }) {
   if (!player) return <div className={"fcard empty" + (small ? " small" : "")} />;
 
   if (faceDown) {
@@ -43,7 +43,7 @@ export default function PlayerCard({ player, faceDown, highlightStat, onPick, sm
   };
 
   return (
-    <div className={"fcard" + (small ? " small" : "")}>
+    <div className={"fcard" + (small ? " small" : "") + (dim ? " dim" : "")}>
       <div className="fc-inner">
         <div className="fc-top">
           <div className="fc-rt">
