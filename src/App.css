@@ -1,0 +1,70 @@
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: #0f1e33;
+  color: #eaf0fa;
+}
+
+.wrap {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+  text-align: center;
+}
+
+.home h1 { font-size: 26px; margin: 32px 0 8px; }
+.sub { color: #9fb3d4; margin: 0 0 28px; }
+
+.modes { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 24px; }
+.mode-btn {
+  flex: 1; min-width: 220px; max-width: 300px;
+  background: #1a2c47; border: 2px solid #2c456b;
+  border-radius: 12px; padding: 16px; cursor: pointer; color: #eaf0fa;
+  display: flex; flex-direction: column; gap: 6px; text-align: left;
+}
+.mode-btn b { font-size: 16px; }
+.mode-btn span { font-size: 13px; color: #9fb3d4; }
+.mode-btn.on { border-color: #4a90e2; background: #21365a; }
+
+.names { display: flex; gap: 12px; justify-content: center; margin-bottom: 20px; flex-wrap: wrap; }
+.names input {
+  background: #1a2c47; border: 1px solid #2c456b; border-radius: 8px;
+  padding: 12px 14px; color: #eaf0fa; font-size: 15px; min-width: 200px;
+}
+.names input::placeholder { color: #6f86a8; }
+
+.start {
+  background: #4a90e2; border: none; border-radius: 10px;
+  padding: 14px 36px; font-size: 16px; font-weight: 700; color: #fff;
+  cursor: pointer;
+}
+.start:hover { background: #3a7fd0; }
+
+.topbar {
+  display: flex; justify-content: space-between; align-items: center;
+  background: #1a2c47; border-radius: 10px; padding: 10px 16px;
+  font-size: 14px; margin-bottom: 16px;
+}
+.ghost { background: transparent; border: 1px solid #2c456b; color: #9fb3d4;
+  border-radius: 8px; padding: 6px 14px; cursor: pointer; }
+
+.turn { font-size: 16px; margin: 0 0 18px; color: #cdddf2; }
+
+.table { display: flex; align-items: center; justify-content: center; gap: 18px; flex-wrap: wrap; }
+.table.single { min-height: 340px; }
+.side { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.side small { color: #9fb3d4; font-size: 13px; }
+.vs { font-size: 20px; font-weight: 800; color: #6f86a8; }
+
+.pot { color: #ffce6b; margin: 18px 0 4px; }
+.result { font-size: 15px; margin: 16px auto 0; max-width: 480px; color: #d6e4f7;
+  background: #1a2c47; border-radius: 8px; padding: 10px 14px; }
+.hint { color: #6f86a8; font-size: 13px; margin-top: 12px; }
+
+.guess-btns { display: flex; gap: 16px; justify-content: center; margin: 24px 0; }
+.guess-btns button {
+  background: #4a90e2; border: none; border-radius: 10px;
+  padding: 14px 40px; font-size: 18px; font-weight: 800; color: #fff; cursor: pointer;
+}
+.guess-btns button:hover { background: #3a7fd0; }
