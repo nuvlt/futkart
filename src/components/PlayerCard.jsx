@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { usePlayerPhoto } from "../usePlayerPhoto.js";
 import "./PlayerCard.css";
 
 // Oyuncuya özel temsili avatar: baş harf + bayrak, pozisyona göre renk.
@@ -21,6 +22,10 @@ function Avatar({ player }) {
 //   player, faceDown, highlightStat, onPick, small, dim
 export default function PlayerCard({ player, faceDown, highlightStat, onPick, small, dim }) {
   const [imgFailed, setImgFailed] = useState(false);
+  const photoSrc = usePlayerPhoto(player);
+
+  // oyuncu değiştiğinde kırık-foto işaretini sıfırla
+  useEffect(() => { setImgFailed(false); }, [player?.id]);
 
   if (!player) return <div className={"fcard empty" + (small ? " small" : "")} />;
 
@@ -53,7 +58,7 @@ export default function PlayerCard({ player, faceDown, highlightStat, onPick, sm
     );
   };
 
-  const showPhoto = player.foto && !imgFailed;
+  const showPhoto = photoSrc && !imgFailed;
 
   return (
     <div className={"fcard" + (small ? " small" : "") + (dim ? " dim" : "")}>
@@ -67,7 +72,7 @@ export default function PlayerCard({ player, faceDown, highlightStat, onPick, sm
           <div className="fc-photo">
             {showPhoto ? (
               <img
-                src={player.foto}
+                src={photoSrc}
                 alt={player.name}
                 onError={() => setImgFailed(true)}
                 loading="lazy"
